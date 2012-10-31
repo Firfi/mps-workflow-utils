@@ -1,0 +1,5 @@
+movedInStatus :
+<input name="movedInStatus" value=#if( $movedInStatus ) $movedInStatus #end></input>
+<br>
+lastAssignee :
+<input name="lastAssignee" value=#if( $lastAssignee ) $lastAssignee #end></input>

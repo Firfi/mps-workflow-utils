@@ -1,0 +1,22 @@
+#if ($issues)
+<table id="issuetable">
+    <tbody>
+        #foreach ($issue in $issues)
+            <tr>
+                <td class="nav issuekey"><a href="$baseurl/browse/$issue.key">$issue.key</a></td>
+                <td class="nav summary"><a href="$baseurl/browse/$issue.key">$issue.summary</a></td>
+                <td class="nav reporter">#if($issue.status)<img src="$baseurl$issue.statusObject.iconUrlHtml"/>$!issue.status.name#end</td>
+                <td class="nav assignee">#if($issue.assignee)$!issue.assignee.displayName#end</td>
+                <td class="nav">$!reporterName</td>
+                <td class="nav">#if($accountNameCf)$!issue.getCustomFieldValue($accountNameCf)#end</td>
+                <td class="nav created">$issue.created</td>
+            </tr>
+        #end
+    </tbody>
+</table>
+    #if ($queryString)
+        <a href="$baseurl/secure/IssueNavigator!executeAdvanced.jspa?jqlQuery=$queryString&runQuery=true&clear=true">Tell me more...</a>
+    #end
+#else
+<p>No issues from this user</p>
+#end
