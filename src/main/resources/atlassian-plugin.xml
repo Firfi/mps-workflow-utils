@@ -76,5 +76,15 @@
         <resource type="download" name="mps-hide-comment-visibility-options.js" location="js/mps-hide-comment-visibility-options.js" />
     </web-resource>
 
+    <web-resource key="date-format-library" name="Date format library" >
+        <context>atl.general</context>
+        <resource type="download" name="date-format-library.js" location="js/dateFormatLibrary.js" />
+    </web-resource>
+
+    <web-resource key="yobaDateTimeUserScript" name="Pretty MPS DataTime">
+        <context>jira.view.issue</context>
+        <dependency>${project.groupId}.${project.artifactId}:date-format-library</dependency>
+        <resource type="download" name="prettyDateTime.js" location="js/prettyDateTime.js" />
+    </web-resource>
 
 </atlassian-plugin>

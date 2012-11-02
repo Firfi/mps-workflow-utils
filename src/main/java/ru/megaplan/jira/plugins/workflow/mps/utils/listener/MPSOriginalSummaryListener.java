@@ -35,9 +35,7 @@ public class MPSOriginalSummaryListener implements InitializingBean, DisposableB
     private final static String MPS = "MPS";
 
     private final EventPublisher eventPublisher;
-    private final CustomFieldManager customFieldManager;
     private final IssueService issueService;
-    private final HistorySearchManager historySearchManager;
 
     private final CustomField originalSummaryCf;
 
@@ -47,10 +45,8 @@ public class MPSOriginalSummaryListener implements InitializingBean, DisposableB
 
 
     MPSOriginalSummaryListener(EventPublisher eventPublisher, CustomFieldManager customFieldManager, IssueService issueService, HistorySearchManager historySearchManager) throws Exception {
-        this.historySearchManager = historySearchManager;
         log.debug("initializing originalsummary listener");
         this.eventPublisher = eventPublisher;
-        this.customFieldManager = customFieldManager;
         this.issueService = issueService;
         originalSummaryCf = customFieldManager.getCustomFieldObjectByName(ORIGINAL_SUMMARY_FIELD);
         findChangeLogFunction = historySearchManager.getFindInChangeLogFunction();
@@ -108,6 +104,5 @@ public class MPSOriginalSummaryListener implements InitializingBean, DisposableB
         changeLogRequest.setLog(log);
         return findChangeLogFunction.get(changeLogRequest);
     }
-
 
 }
