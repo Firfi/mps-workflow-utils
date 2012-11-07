@@ -28,6 +28,7 @@ import org.apache.velocity.exception.VelocityException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.Reference;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -78,8 +79,7 @@ public class IssuesFromSameReporterPanel extends AbstractIssueTabPanel2 {
         String result = null;
         Issue issue = getActionsRequest.issue();
         Query sameReporterQuery = getSameReporterQuery(issue);
-        SearchResults searchResults = getIssuesFromSameReporter(getActionsRequest.remoteUser(), sameReporterQuery);
-        List<Issue> issues = searchResults.getIssues();
+        List<Issue> issues = getIssuesFromSameReporter(getActionsRequest.remoteUser(), sameReporterQuery, issue);
         if (issues == null) {
             result = "error in search";
         } else {
@@ -87,7 +87,7 @@ public class IssuesFromSameReporterPanel extends AbstractIssueTabPanel2 {
             if (accountNameCf != null) {
                 context.put("accountNameCf", accountNameCf);
             }
-            if (searchResults.getTotal() > MAX_ISSUES_ON_PAGE) {
+            if (issues.size() > MAX_ISSUES_ON_PAGE) {
                 try {
                     context.put("queryString", URLEncoder.encode(searchService.getGeneratedJqlString(sameReporterQuery),"UTF-8"));
                 } catch (UnsupportedEncodingException e) {
@@ -120,7 +120,7 @@ public class IssuesFromSameReporterPanel extends AbstractIssueTabPanel2 {
         return gar;
     }
 
-    private SearchResults getIssuesFromSameReporter(User remoteUser,Query query) {
+    private List<Issue> getIssuesFromSameReporter(User remoteUser, Query query, Issue issue) {
         SearchResults searchResults = null;
         try {
             searchResults = searchService.search(remoteUser, query, PagerFilter.newPageAlignedFilter(0,MAX_ISSUES_ON_PAGE));
@@ -128,7 +128,27 @@ public class IssuesFromSameReporterPanel extends AbstractIssueTabPanel2 {
             log.error("error in search",e);
             return null;
         }
-        return searchResults;
+        //additionaly check for exactly same account name
+        List<Issue> r = searchResults.getIssues();
+        List<Issue> result = new ArrayList<Issue>();
+        for (Issue i : r) {
+            if (issue.getReporter() != null && !issue.getReporter().equals(i.getReporter())) {
+                if (accountNameCf != null) {
+                    Object value1 = issue.getCustomFieldValue(accountNameCf);
+                    Object value2 = i.getCustomFieldValue(accountNameCf);
+                    if (value1 != null && value2 != null && !value1.equals(value2)) {
+                        //fuck off
+                    } else {
+                        result.add(i);
+                    }
+                } else {
+                    result.add(i);
+                }
+            } else {
+                result.add(i);
+            }
+        }
+        return result;
     }
 
     private boolean hasIssuesFromSameReporter(Issue issue, User remoteUser) {
